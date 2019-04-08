@@ -1,0 +1,329 @@
+1) vnit@vnit-ThinkCentre-M58p:~/Desktop$ git --version
+git version 2.21.0
+2) vnit@vnit-ThinkCentre-M58p:~/Desktop$ git config --global user.name "paragdhawan"
+3) vnit@vnit-ThinkCentre-M58p:~/Desktop$ git config --global user.email "parag.dhawan@yahoo.co.in"
+4) vnit@vnit-ThinkCentre-M58p:~/Desktop$ git config --list
+user.name=paragdhawan
+user.email=parag.dhawan@yahoo.co.in
+core.repositoryformatversion=0
+core.filemode=true
+core.bare=false
+core.logallrefupdates=true
+remote.origin.url=https://github.com/paragdhawan/hello-world.git
+remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*
+branch.master.remote=origin
+branch.master.merge=refs/heads/master
+5) vnit@vnit-ThinkCentre-M58p:~/Desktop$ git help config
+or 
+vnit@vnit-ThinkCentre-M58p:~/Desktop$ git mkdirconfig --help
+
+
+
+Initilaizing local repository
+
+6) vnit@vnit-ThinkCentre-M58p:~/Desktop$ mkdir localrepo
+vnit@vnit-ThinkCentre-M58p:~/Desktop$ cd localrepo
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo$ git init
+Initialized empty Git repository in /home/vnit/Desktop/localrepo/.git/
+vnit@vnit-ThinkCentre-Mmkd58p:~/Desktop/localrepo$ ls -l
+total 0
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo$ ls -al
+total 12
+drwxrwxr-x  3 vnit vnit 4096 Mar  8 13:16 .
+drwxr-xr-x 12 vnit vnit 4096 Mar  8 13:16 ..
+drwxrwxr-x  7 vnit vnit 4096 Mar  8 13:16 .git
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo$ 
+
+7) remove local reository
+
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo$ rm -rf .git
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo$ ls -la
+total 8
+drwxrwxr-x  2 vnit vnit 4096 Mar  8 13:18 .
+drwxr-xr-x 12 vnit vnit 4096 Mar  8 13:17 ..
+
+8) vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo$ git init 
+Initialized empty Git repository in /home/vnit/Desktop/localrepo/.git/
+
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo$ ls -la
+total 12
+drwxrwxr-x  3 vnit vnit 4096 Mar  8 13:19 .
+drwxr-xr-x 12 vnit vnit 4096 Mar  8 13:19 ..
+drwxrwxr-x  7 vnit vnit 4096 Mar  8 13:19 .git
+
+9)vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo$ git status
+On branch master
+
+No commits yet
+
+nothing to commit (create/copy files and use "git add" to track)
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo$ gedit file1.txt
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo$ gedit file2.txt
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo$ git status
+On branch master
+
+No commits yet
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+	file1.txt
+	file2.txt
+
+nothing added to commit but untracked files present (use "git add" to track)
+
+10) vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo$ gedit .gitignore
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo$ git status
+On branch master
+
+No commits yet
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+	.gitignore
+	file2.txt---
+
+nothing added to commit but untracked files present (use "git add" to track)
+
+
+11) vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo$ git add .gitignore
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo$ git status
+On branch master
+
+No commits yet
+
+Changes to be committed:
+  (use "git rm --cached <file>..." to unstage)
+
+	new file:   .gitignore
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+	file2.txt
+
+----
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo$ git add -A
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo$ git status
+On branch master
+
+No commits yet
+
+Changes to be committed:
+  (use "git rm --cached <file>..." to unstage)
+
+	new file:   .gitignore
+	new file:   file2.txt
+
+ 12) vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo$ git reset file2.txt
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo$ git status
+On branch master
+
+No commits yet
+
+Changes to be committed:
+  (use "git rm --cached <file>..." to unstage)
+
+	new file:   .gitignore
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+	file2.txt
+---
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo$ git reset
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo$ git status
+On branch master
+
+No commits yet
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+	.gitignore
+	file2.txt
+
+nothing added to commit but untracked files present (use "git add" to track)
+
+13)vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo$ git add -A
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo$ git status
+On branch master
+
+No commits yet
+
+Changes to be committed:
+  (use "git rm --cached <file>..." to unstage)
+
+	new file:   .gitignore
+	new file:   file2.txt
+
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo$ git commit -m " Initial committ"
+[master (root-commit) bf31778]  Initial committ
+ 2 files changed, 3 insertions(+)
+ create mode 100644 .gitignore
+ create mode 100644 file2.txt
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo$ git log
+commit bf317783a236b96519d78421fdf5f38d4e8c43b5 (HEAD -> master)
+Author: paragdhawan <parag.dhawan@yahoo.co.in>
+Date:   Fri Mar 8 13:38:30 2019 +0530
+
+     Initial committ
+14) vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo$ git clone https://github.com/paragdhawan/hello-world.git
+Cloning into 'hello-world'...
+remote: Enumerating objects: 4, done.
+remote: Counting objects: 100% (4/4)ls
+, done.
+remote: Total 4 (delta 0), reused 4 (delta 0), pack-reused 0
+Unpacking objects: 100% (4/4), done.
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo$ git status
+On branch master
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+	hello-world/
+
+nothing added to commit but untracked files present (use "git add" to track)
+
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo$ cd hello-world
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo/hello-world$ git git -v
+origin	https://github.com/paragdhawan/hello-world.git (fetch)
+origin	https://github.com/paragdhawan/hello-world.git (push)
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo/hello-world$ ls -la
+total 16
+drwxrwxr-x 4 vnit vnit 4096 Mar  8 13:43 .
+drwxrwxr-x 4 vnit vnit 4096 Mar  8 13:43 ..
+drwxrwxr-x 8 vnit vnit 4096 Mar  8 13:43 .git
+drwxrwxr-x 2 vnit vnit 4096 Mar  8 13:43 hello-world
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo/hello-world$ git branch -a
+* master
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/master
+
+15) vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo/hello-world/hello-world$ gedit readme.txt
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo/hello-world/hello-world$ git diff
+diff --git a/hello-world/readme.txt b/hello-world/readme.txt
+index 3b18e51..68ee958 100644
+--- a/hello-world/readme.txt
++++ b/hello-world/readme.txt
+@@ -1 +1 @@
+-hello world
++hello world 123
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo/hello-world/hello-world$ git status
+On branch master
+Your branch is up to date with 'origin/master'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+	modified:   readme.txt
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+	../file3.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo/hello-world/hello-world$ git add -A
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo/hello-world/hello-world$ git commit -m "modifide 123"
+[master 621dde3] modifide 123
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+ create mode 100644 file3.txt
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo/hello-world/hello-world$ git status
+On branch master
+Your branch is ahead of 'origin/master' by 1 commit.
+  (use "git push" to publish your local commits)
+
+nothing to commit, working tree clean
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo/hello-world/hello-world$ git pull
+Already up to date.
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo/hello-world/hello-world$ git pull origin master
+From https://github.com/paragdhawan/hello-world
+ * branch            master     -> FETCH_HEAD
+Already up to date.
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo/hello-world/hello-world$ git push origin master
+Username for 'https://github.com': paragdhawan
+Password for 'https://paragdhawan@github.com': 
+Enumerating objects: 8, done.
+Counting objects: 100% (8/8), done.
+Delta compression using up to 2 threads
+Compressing objects: 100% (2/2), done.
+Writing objects: 100% (5/5), 376 bytes | 376.00 KiB/s, done.
+Total 5 (delta 0), reused 0 (delta 0)
+To https://github.com/paragdhawan/hello-world.git
+   a569508..621dde3  master -> master
+
+16)vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo/hello-world/hello-world$ git branch readmebranch
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo/hello-world/hello-world$ git branch
+* master
+  readmebranch
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo/hello-world/hello-world$ git checkout readmebranch
+Switched to branch 'readmebranch'
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo/hello-world/hello-world$ git branch
+  master
+* readmebranch
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo/hello-world/hello-world$ ls
+readme.txt
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo/hello-world/hello-world$ gedi readme.txt
+No command 'gedi' found, did you mean:
+ Command 'gedit' from package 'gedit' (main)
+gedi: command not found
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo/hello-world/hello-world$ gedit readme.txt
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo/hello-world/hello-world$ git status
+On branch readmebranch
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+	modified:   readme.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo/hello-world/hello-world$ git add -A
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo/hello-world/hello-world$ git commit -m "added 567"
+[readmebranch f167dc6] added 567
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo/hello-worlterr
+Password for 'https://paragdhawan@github.com': 
+Enumerating objects: 7, done.
+Counting objects: 100% (7/7), done.
+Delta compression using up to 2 threads
+Compressing objects: 100% (2/2), done.
+Writing objects: 100% (4/4), 347 bytes | 347.00 KiB/s, done.
+Total 4 (delta 0), reused 0 (delta 0)
+remote: 
+remote: Create a pull request for 'readmebranch' on GitHub by visiting:
+remote:      https://github.com/paragdhawan/hello-world/pull/new/readmebranch
+remote: 
+To https://github.com/paragdhawan/hello-world.git
+ * [new branch]      readmebranch -> readmebranch
+Branch 'readmebranch' set up to track remote branch 'readmebranch' from 'origin'.
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo/hello-world/hello-world$ git branch -a
+  master
+* readmebranch
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/master
+  remotes/origin/readmebranch
+
+17)vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo/hello-world/hello-world$ git checkout master
+Switched to branch 'master'
+Your branch is up to date with 'origin/master'.
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo/hello-world/hello-world$ git pull origin master
+From https://github.com/paragdhawan/hello-world
+ * branch            master     -> FETCH_HEAD
+Already up to date.
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo/hello-world/hello-world$ git branch --merge
+* master
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo/hello-world/hello-world$ git merge readmebranch
+Updating 621dde3..f167dc6
+Fast-forward
+ hello-world/readme.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+vnit@vnit-ThinkCentre-M58p:~/Desktop/localrepo/hello-world/hello-world$ git push origin master
+Username for 'https://github.com': paragdhawan
+Password for 'https://paragdhawan@github.com': 
+Total 0 (delta 0), reused 0 (delta 0)
+To https://github.com/paragdhawan/hello-world.git
+   621dde3..f167dc6  master -> master
+
+
