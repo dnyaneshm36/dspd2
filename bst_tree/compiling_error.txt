@@ -1,8 +1,17 @@
-C:\Users\dnyaneshwar\Documents\dspd2\bst_tree\b+.c: In function 'insert_record':
-C:\Users\dnyaneshwar\Documents\dspd2\bst_tree\b+.c:90:10: error: expected expression before '->' token
-     temp=->db[0]=newnode;
-          ^
-C:\Users\dnyaneshwar\Documents\dspd2\bst_tree\b+.c:100:15: error: 'key' undeclared (first use in this function)
-           if (key<ptr->k[i])              //stoping when key is less than array(key) of i
-               ^
-C:\Users\dnyaneshwar\Documents\dspd2\bst_tree\b+.c:100:15: note: each undeclared identifier is reported only once for each function it appears in
+C:\Users\dnyaneshwar\Documents\GitHub\dspd2\bst_tree\b+.c:36:32: error: unknown type name 'db_node_type'
+ int give_no_of_records_in_list(db_node_type *start,db_node_type *end)
+                                ^
+C:\Users\dnyaneshwar\Documents\GitHub\dspd2\bst_tree\b+.c:36:52: error: unknown type name 'db_node_type'
+ int give_no_of_records_in_list(db_node_type *start,db_node_type *end)
+                                                    ^
+C:\Users\dnyaneshwar\Documents\GitHub\dspd2\bst_tree\b+.c: In function 'insert_record':
+C:\Users\dnyaneshwar\Documents\GitHub\dspd2\bst_tree\b+.c:116:16: error: 'new' undeclared (first use in this function)
+           if ((new->data)<ptr->k[i])              //stoping when key is less than array(key) of i
+                ^
+C:\Users\dnyaneshwar\Documents\GitHub\dspd2\bst_tree\b+.c:116:16: note: each undeclared identifier is reported only once for each function it appears in
+C:\Users\dnyaneshwar\Documents\GitHub\dspd2\bst_tree\b+.c:132:16: warning: assignment makes integer from pointer without a cast
+           start=ptr->p[0];           //both start and end need leter for counting node
+                ^
+C:\Users\dnyaneshwar\Documents\GitHub\dspd2\bst_tree\b+.c:133:14: warning: assignment makes integer from pointer without a cast
+           end=ptr->p[ptr->count-1]; //in the dblist.
+              ^
