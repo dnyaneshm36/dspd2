@@ -1,0 +1,8 @@
+C:\Users\dnyaneshwar\Documents\dspd2\bst_tree\b+.c: In function 'insert_record':
+C:\Users\dnyaneshwar\Documents\dspd2\bst_tree\b+.c:90:10: error: expected expression before '->' token
+     temp=->db[0]=newnode;
+          ^
+C:\Users\dnyaneshwar\Documents\dspd2\bst_tree\b+.c:100:15: error: 'key' undeclared (first use in this function)
+           if (key<ptr->k[i])              //stoping when key is less than array(key) of i
+               ^
+C:\Users\dnyaneshwar\Documents\dspd2\bst_tree\b+.c:100:15: note: each undeclared identifier is reported only once for each function it appears in
