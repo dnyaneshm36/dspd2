@@ -75,37 +75,69 @@ btree_node * split_btreenode_when_5node_are_there(btree_node *root,int key)
 {
   int i,done,flag=0;
   btree_node *ptr=root;
-  if(ptr->cou)
-
-
-
-
-
-
-
-  while (flag==0)
+  if(ptr->count==5)
   {
-      done=0;
-      for(i=0;i<4&&done==0&&(ptr->k[i])!=-1&&i<(ptr->count);i++)     //tavaling in key array of size 4
-      {                                     //stoping when we get empty space which is -1
-        if (key<ptr->k[i])              //stoping when key is less than array(key) of i
-        {                               //count element to extra protection
-          done=1;
+        new_right=give_empty_btree_node;
+        new_root=give_empty_btree_node;
+        new_root->k[0]=ptr->k[2];
+        new_root->p[0]=ptr;
+        new_root->p[1]=new_right;
+        for(i=3,i<5,i++)
+        {
+          new_right[i-3]=ptr->k[i];
+          ptr->k[i]=-1;
         }
-      }                                     //exiting loop i++ is perform
-      if(done==1)                          //decrease beacause of lesserkeys
-      {                                   //found at pointer array of btree_tag
-        i--;
-      }
-      if(ptr->p[0]!=NULL)          //to check weather this btree_node is not last
-      {
-        ptr=ptr->p[i];
-      }
-      else                       //going for dblist_type list
-      {                          //that mean record nodes
-        flag=1;
-      }
+        ptr->k[2]=-1;
+        if(ptr->db[0]!=NULL)
+        {
+            for(i=3;i<6;i++)
+            {
+                new_right->db[i-3]=ptr->db[i];
+                ptr->db[i]=NULL;
+            }
+        }
+        else
+        {
+          for(i=3;i<6;i++)
+          {
+              new_right->p[i-3]=ptr->p[i];
+              ptr->db[i]=NULL;
+          }
+        }
   }
+  else
+  {
+    while (flag==0)
+    {
+        done=0;
+        for(i=0;i<4&&done==0&&(ptr->k[i])!=-1&&i<(ptr->count);i++)     //tavaling in key array of size 4
+        {                                     //stoping when we get empty space which is -1
+          if (key<ptr->k[i])              //stoping when key is less than array(key) of i
+          {                               //count element to extra protection
+            done=1;
+          }
+        }                                     //exiting loop i++ is perform
+        if(done==1)                          //decrease beacause of lesserkeys
+        {                                   //found at pointer array of btree_tag
+          i--;
+        }
+        if(ptr->p[0]!=NULL)          //to check weather this btree_node is not last
+        {
+          ptr=ptr->p[i];
+        }
+        else                       //going for dblist_type list
+        {                          //that mean record nodes
+          flag=1;
+        }
+    }  }
+
+
+
+
+
+
+
+
 }
 dblist_type * search_for_record(btree_node * root ,int key)
 {
