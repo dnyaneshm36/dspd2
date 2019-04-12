@@ -73,71 +73,128 @@ int give_no_of_records_in_list(dblist_type *start,dblist_type *nextstart)
 }
 btree_node * split_btreenode_when_5node_are_there(btree_node *root,int key)
 {
-  int i,done,flag=0;
+  int i,j,done,flag=0;
   btree_node *ptr=root;
-  if(ptr->count==5)
+  btree_node *new_root,*new_right,*previous;
+  new_right=give_empty_btree_node();
+  if(ptr->count==5)    //root node is full
   {
-        new_right=give_empty_btree_node;
-        new_root=give_empty_btree_node;
-        new_root->k[0]=ptr->k[2];
+        new_root=give_empty_btree_node();
+        new_root->k[0]=ptr->k[2];   //new root value
         new_root->p[0]=ptr;
         new_root->p[1]=new_right;
-        for(i=3,i<5,i++)
+        root=new_root;
+/*just spleatting the ptr and new_right*/
+        for(i=3;i<5;i++)     //coping key to new_right only 2 keys
         {
-          new_right[i-3]=ptr->k[i];
-          ptr->k[i]=-1;
+          new_right->k[i-3]=ptr->k[i];
+          ptr->k[i]=-1;         //unessery are intillized
         }
-        ptr->k[2]=-1;
-        if(ptr->db[0]!=NULL)
+        ptr->k[2]=-1;       //unnessery
+        if(ptr->db[0]!=NULL)   //btree_tag at just abouve the root level
         {
-            for(i=3;i<6;i++)
+            for(i=3;i<6;i++)   //3 pointer for db are copyed
             {
                 new_right->db[i-3]=ptr->db[i];
-                ptr->db[i]=NULL;
+                ptr->db[i]=NULL;   //those are copyed they are intillized
             }
         }
-        else
+        else     //same above thing with the pointer of btree_tag
         {
-          for(i=3;i<6;i++)
+          for(i=3;i<6;i++)   //b
           {
               new_right->p[i-3]=ptr->p[i];
               ptr->db[i]=NULL;
           }
         }
   }
-  else
+  else   //not dealing with root node
   {
-    while (flag==0)
-    {
-        done=0;
-        for(i=0;i<4&&done==0&&(ptr->k[i])!=-1&&i<(ptr->count);i++)     //tavaling in key array of size 4
-        {                                     //stoping when we get empty space which is -1
-          if (key<ptr->k[i])              //stoping when key is less than array(key) of i
-          {                               //count element to extra protection
-            done=1;
+      previous=NULL;
+      while (flag==0)
+      {
+          if(ptr->count==5)   //stop when count means that node have to split
+          {
+            flag=1;
           }
-        }                                     //exiting loop i++ is perform
-        if(done==1)                          //decrease beacause of lesserkeys
-        {                                   //found at pointer array of btree_tag
+          else       //this for goto apporait ptr means btree_node
+          {
+              done=0;
+              for(i=0;i<4&&done==0&&(ptr->k[i])!=-1&&i<(ptr->count);i++)     //tavaling in key array of size 4
+              {                                     //stoping when we get empty space which is -1
+                  if (key<ptr->k[i])              //stoping when key is less than array(key) of i
+                  {                               //count element to extra protection
+                    done=1;
+                  }
+              }                                     //exiting loop i++ is perform
+              if(done==1)                          //decrease beacause of lesserkeys
+              {                                   //found at pointer array of btree_tag
+                i--;
+              }
+              if(ptr->p[0]!=NULL)          //to check weather this btree_node is not last
+              {
+                previous=ptr;       //travaling way such that prev is get
+                ptr=ptr->p[i];
+              }
+          }
+      }
+/*just spleatting the ptr and new_right*/
+      for(i=3;i<5;i++)     //coping key to new_right only 2 keys
+      {
+        new_right->k[i-3]=ptr->k[i];
+        ptr->k[i]=-1;         //unessery are intillized
+      }
+      ptr->k[2]=-1;       //unnessery
+      if(ptr->db[0]!=NULL)   //btree_tag at just abouve the root level
+      {
+          for(i=3;i<6;i++)   //3 pointer for db are copyed
+          {
+              new_right->db[i-3]=ptr->db[i];
+              ptr->db[i]=NULL;   //those are copyed they are intillized
+          }
+      }
+      else     //same above thing with the pointer of btree_tag
+      {
+        for(i=3;i<6;i++)   //b
+        {
+            new_right->p[i-3]=ptr->p[i];
+            ptr->db[i]=NULL;
+        }
+      }
+//end the spleatting
+//just remaining to put key in previous btree_node and check weather the previous count ==5
+        for(i=0;done=0&&i<previous->count&&i<4&&previous->k[i]!=-1;i++)
+        {
+              if(key<previous->k[i])
+              {
+                  done=1;
+              }
+        }
+        if(done==1)
+        {
           i--;
         }
-        if(ptr->p[0]!=NULL)          //to check weather this btree_node is not last
+        previous->count++;
+        for(j=previous->count;j>i;j--)   //pushing data one location ahead
+        {                         //j can reach upto i+1 there a[i]copyed
+          previous->k[j]=previous->k[j-1];     //form j max is count so a[last bit not val(-1)copyed]
+        }
+        previous->k[i]=key;       //at i positiion we bring key
+        if(previous->p[0]!=NULL)   //most almost this thing happed on safeside i check
         {
-          ptr=ptr->p[i];
+              for(j=(previous->count)+1;j>i+1;j--)   //similiry pointer form
+              {                                 //i+1pointer copyed to i+2 loca
+                previous->p[j]=previous->p[j-1];    //  last p[count] copyed to p[count+1]
+              }
+          previous->p[i+1]=new_right;        //at i+1 pointer listed to madian or middle
         }
-        else                       //going for dblist_type list
-        {                          //that mean record nodes
-          flag=1;
-        }
-    }  }
-
-
-
-
-
-
-
-
+            if(previous->count==5)
+            {
+              //code for spliatint btree nodes
+              root=split_btreenode_when_5node_are_there(root,previous->k[2]);
+            }
+  }
+return root;
 }
 dblist_type * search_for_record(btree_node * root ,int key)
 {
@@ -188,7 +245,7 @@ dblist_type * search_for_record(btree_node * root ,int key)
 }
 btree_node* insert_record(btree_node * root ,dblist_type* newnode)
 {
-  int i,done,flag=0,light;
+  int i,j,done,flag=0,light;
   btree_node *ptr,*temp;
   dblist_type *ret_val,*start,*end;
   int no_list_node;
@@ -249,7 +306,7 @@ btree_node* insert_record(btree_node * root ,dblist_type* newnode)
       {                         //j can reach upto i+1 there a[i]copyed
         ptr->k[j]=ptr->k[j-1];     //form j max is count so a[last bit not val(-1)copyed]
       }
-      a[i]=ret_val->data;       //at i positiion we bring key
+      ptr->k[i]=ret_val->data;       //at i positiion we bring key
       for(j=(ptr->count)+1;j>i+1;j--)   //similiry pointer form
       {                                 //i+1pointer copyed to i+2 loca
         ptr->db[j]=ptr->db[j-1];    //  last db[count] copyed to db[count+1]
@@ -258,7 +315,7 @@ btree_node* insert_record(btree_node * root ,dblist_type* newnode)
           if(ptr->count==5)
           {
             //code for spliatint btree nodes
-            root=split_btreenode_when_5node_are_there(root,ptr->k[2])
+            root=split_btreenode_when_5node_are_there(root,ptr->k[2]);
           }
     }
   }
