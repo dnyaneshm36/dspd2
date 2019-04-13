@@ -12,6 +12,7 @@ typedef struct btree_tag
 {
   int k[5];
   int count;
+  int count_record;
   struct btree_tag *p[6];
   struct dblist *db[6];
 }btree_node;
@@ -22,6 +23,7 @@ btree_node * give_empty_btree_node()
   btree_node * new;
   new =(btree_node *)malloc(sizeof(btree_node));
   new->count=0;
+  new->count_record=0;
   for(i=0;i<5;i++)
   {
     new->k[i]=-1;
@@ -70,6 +72,27 @@ int give_no_of_records_in_list(dblist_type *start,dblist_type *nextstart)
     temp=temp->next;
   }
   return count;
+}
+void display(btree_node * root,int count)
+{
+   int i;
+   printf("[");
+   for(i=0;i<root->count;i++)
+   {
+   printf("%d|",root->k[i]);
+  }
+   printf("]\n");
+   if(root->db[0]!=NULL)
+   {
+     for(i=0;i<root->count+1;i++)
+     {
+       display(root->p[i],count*10);
+     }
+   }
+   else
+   {
+
+   }
 }
 btree_node * split_btreenode_when_5node_are_there(btree_node *root,int key)
 {
@@ -320,7 +343,360 @@ btree_node* insert_record(btree_node * root ,dblist_type* newnode)
     }
   }
 }
+btree_node * adject_btree_node_when1(btree_node *root,int key)
+{
+// real quick information what it do just node where key key is present
+//there is 1 elemnt situation happen so
+//if there is key in root them to it ok
+//nothing to do
 
+//if left_bro has enough broght from present of parant
+//try for same thing from right_bro
+// merge them see what will done
+  int i,j,k,done,flag=0,light;
+  btree_node *ptr,*temp,*father,*left_bro,*right_bro;
+  dblist_type *ret_val,*start,*end;
+  int no_list_node,father_ith_child;
+  int no_ofnode_inleft_list,no_ofnode_inright_list;    
+}
+void delete_db_node(dblist_type * target)
+{
+  dblist_type * left;
+  dblist_type * right;
+  if(target->prev!=NULL&&target!=NULL)
+  {
+     left=target->prev;
+     right=target->next;
+     left->next=right;
+     right->prev=left;
+     free(target);
+  }
+  else if(target->prev!=NULL)
+  {
+    left=target->prev;
+    left->next=NULL;
+    free(target);
+  }
+  else if (target->next!=NULL)
+  {
+    right=target->next;
+    right->prev=NULL;
+    free(target);
+  }
+}
+btree_node * manage_btree_just_replacing(btree_node *root,int old,int new)
+{
+    int i,flag=0,done=0;
+    btree_node * ptr;
+    ptr=root;
+    if(ptr==NULL) //empty tree
+    {
+          printf("error:- tree is empty\n");
+    }
+    else
+    {
+  	    while (flag==0)
+  	    {
+  	        done=0;
+  	        for(i=0;i<4&&(ptr->k[i])!=-1&&i<(ptr->count);i++)     //tavaling in key array of size 4
+  	        {                                     //stoping when we get empty space which is -1
+  	          if ((old)==ptr->k[i])              //stoping when key is less than array(key) of i
+  	          {                               //count element to extra protection
+  	            ptr->k[i]=new;
+  	          }
+  	        }                                     //exiting loop i++ is perform
+  	        if(ptr->p[0]!=NULL)          //to check weather this btree_node is not last
+  	        {
+  	          ptr=ptr->p[i];
+  	        }
+  	    }
+      }
+  return root;
+}
+btree_node * delete(btree_node * root,int key)
+{
+  int i,j,k,done,flag=0,light;
+  btree_node *ptr,*temp,*father,*left_bro,*right_bro;
+  dblist_type *ret_val,*start,*end;
+  int no_list_node,father_ith_child;
+  int no_ofnode_inleft_list,no_ofnode_inright_list;
+  ptr=root;
+  father=NULL;
+  if(ptr==NULL) //empty tree
+  {
+        printf("error:- tree is empty\n");
+  }
+  else
+  {
+	    while (flag==0)
+	    {
+	        done=0;
+	        for(i=0;i<4&&done==0&&(ptr->k[i])!=-1&&i<(ptr->count);i++)     //tavaling in key array of size 4
+	        {                                     //stoping when we get empty space which is -1
+	          if ((key)<ptr->k[i])              //stoping when key is less than array(key) of i
+	          {                               //count element to extra protection
+	            done=1;
+	          }
+	        }                                     //exiting loop i++ is perform
+	        if(done==1)                          //decrease beacause of lesserkeys
+	        {                                   //found at pointer array of btree_tag
+	          i--;
+	        }
+	        if(ptr->p[0]!=NULL)          //to check weather this btree_node is not last
+	        {
+            father_ith_child=i;
+            father=ptr;
+	          ptr=ptr->p[i];
+	        }
+	        else                       //going for dblist_type list
+	        {                          //that mean record nodes
+	          flag=1;
+	          start=ptr->db[i];           //both start and end need leter for counting node
+	          end=ptr->db[i+1]; //in the dblist. nextstartof node_dblist
+	        }
+	    }
+      ret_val=ptr->db[i];                 //start of node_dblist
+      no_list_node=give_no_of_records_in_list(start,end);  //it seding start and start of new list
+      for(j=0;j<no_list_node&&done==0;j++)  //at most we are cheacking next  4 record from bottom list
+      {
+        if((key)==ret_val->data&&ret_val->next!=NULL) //node data should greater current record
+        {                                           // beacause chances geting record
+            if(no_list_node>2)
+            {
+                if(j==0&&i!=0)   //first node_dblist and i means it just above tree node
+                {
+                  ptr->k[i-1]=(ret_val->next)->data;
+                }
+                else if(i==0&&j==0)  //this means first list  & list first from above
+                {                   //btree_node need to replace just where old key with new
+                    root=manage_btree_just_replacing(root,key,(ret_val->next)->data);
+                    //this just replace old key with new one
+                }
+                ptr->db[i]=ret_val->next;  //node deleted so next should pointed by dbpointer
+                delete_db_node(ret_val);
+            }
+            else if(no_list_node==2)  //this become < than min ele.
+            {
+              // in this trafering record will happen so we have to know left_bro &right_bro (of ptr)
+              //this list check the first left list if >2 record  take from left list
+              //else if cheack right list >2 record take it from them.
+              //else only condition remaining that left&right has 2 of record
+              //in this condion megin will happed. and we will talk leter.
+              left_bro=father->p[father_ith_child-1];
+              right_bro=father->p[father_ith_child+1];
+              //may any one of them are null so use just what you need
+              //don't rush in null pointer error
+              //just check i and figerout what to do
+                  if(i==0) //use left_bro
+                  {
+                      no_ofnode_inleft_list=give_no_of_records_in_list(left_bro->db[left_bro->count+1],ptr->db[i]);
+                      no_ofnode_inright_list=give_no_of_records_in_list(ptr->db[i],ptr->db[i+1]);
+                      if(no_ofnode_inleft_list>2)
+                      {
+                        //taking form  max form left list
+                        ptr->db[i]=(ptr->db[i])->prev;
+                        //mix record is add in the list & we can easilly delete record
+                        if(j==0&&i!=0)   //first node_dblist and i means it just above tree node
+                        {
+                          ptr->k[i-1]=(((ptr->db[i])->prev)->data); //i==0 not dont
+                        }                                            //worry about any thing
+                        else if(i==0&&j==0)  //this means first list  & list first from above
+                        {                   //btree_node need to replace just where old key with new
+                            root=manage_btree_just_replacing(root,(ret_val)->data,((ptr->db[i])->prev)->data);
+                            //this just replace old key with new one
+                        }
+                        delete_db_node(ret_val);
+                      }
+                      else if(no_ofnode_inright_list>2)
+                      {
+                        //taking form right list min element
+                        ptr->db[i+1]=ptr->db[i+1]->next;
+                        //just move next pointer form array take it to forwared
+                        //min record is added in the sublist
+                        if(j==0&&i!=0)   //first node_dblist and i means it just above tree node
+                        {
+                          ptr->k[i-1]=(ret_val->prev)->data; //i==0
+                        }
+                        else if(i==0&&j==0)  //this means first list  & list first from above
+                        {                   //btree_node need to replace just where old key with new
+                            root=manage_btree_just_replacing(root,(ret_val)->data,(ret_val->next)->data);
+                            //this just replace old key with new one
+                        }
+                        delete_db_node(ret_val);
+                      }
+                      else
+                      {
+                        //mean left tree and right tree noodes ==2
+                        //mering in left list i==0
+                        light=ret_val->data;
+                        delete_db_node(ret_val);
+                        ptr->count--;
+                        for(k=i;k<ptr->count;k++)
+                        {
+                          ptr->db[k]=ptr->db[k+1];
+                        }
+                        for(k=i;k<ptr->count;k++)
+                        {
+                          ptr->k[k]=(ptr->db[k+1])->data;
+                        }
+
+                        if(j==0&&i!=0)   //first node_dblist and i means it just above tree node
+                        {
+                          ptr->k[i-1]=(ptr->db[0])->data; //i==0
+                        }
+                        else if(i==0&&j==0)  //this means first list  & list first from above
+                        {                   //btree_node need to replace just where old key with new
+                            root=manage_btree_just_replacing(root,light,(ptr->db[0])->data);
+                            //this just replace old key with new one
+                        }
+                        if(ptr->count==1)
+                        {
+                          root=adject_btree_node_when1(root,ptr->k[0]);
+                        }
+                      }
+                  }
+                  else if(i==ptr->count+1)  //right_bro
+                  {
+                    no_ofnode_inright_list=give_no_of_records_in_list(ptr->db[i],right_bro->db[0]);
+                    no_ofnode_inleft_list=give_no_of_records_in_list(ptr->db[i-1],ptr->db[i]);
+                    if(no_ofnode_inleft_list>2)
+                    {
+                      //taking form  max form left list
+                      ptr->db[i]=(ptr->db[i])->prev;
+                      //max record is add in the list & we can easilly delete record
+                      if(j==0&&i!=0)   //first node_dblist and i means it just above tree node
+                      {
+                        ptr->k[i-1]=(((ptr->db[i])->prev)->data);
+                      }
+                      else if(i==0&&j==0)  //this means first list  & list first from above
+                      {                   //btree_node need to replace just where old key with new
+                          root=manage_btree_just_replacing(root,(ret_val)->data,((ptr->db[i])->prev)->data);
+                          //this just replace old key with new one
+                      }
+                      delete_db_node(ret_val);
+                    }
+                    else if(no_ofnode_inright_list>2)
+                    {
+                      //taking form right list min element
+                      right_bro->db[0]=right_bro->db[0]->next;
+                      if(j==0&&i!=0)   //first node_dblist and i means it just above tree node
+                      {
+                        ptr->k[i-1]=(ptr->db[0]->next)->data;
+                      }
+                      else if(i==0&&j==0)  //this means first list  & list first from above
+                      {                   //btree_node need to replace just where old key with new
+                          root=manage_btree_just_replacing(root,(ret_val)->data,(ret_val->next)->data);
+                          //this just replace old key with new one
+                      }
+                      delete_db_node(ret_val);
+                    }
+                    else
+                    {
+                      //mean left tree and right tree noodes ==2
+                      //mering in left list i==max
+                      light=(ret_val->next)->data;
+                      delete_db_node(ret_val);
+                      ptr->count--;
+                      for(k=i;k<ptr->count;k++)
+                      {
+                        ptr->db[k]=ptr->db[k+1];
+                      }
+                      for(k=i;k<ptr->count;k++)
+                      {
+                        ptr->k[k-1]=(ptr->db[k])->data;
+                      }
+
+                      if(j==0&&i!=0)   //first node_dblist and i means it just above tree node
+                      {
+                        ptr->k[i-1]=light; //i==max
+                      }
+                      else if(i==0&&j==0)  //this means first list  & list first from above
+                      {                   //btree_node need to replace just where old key with new
+                          root=manage_btree_just_replacing(root,light,(ptr->db[0])->data);
+                          //this just replace old key with new one
+                      }
+                      if(ptr->count==1)
+                      {
+                        root=adject_btree_node_when1(root,ptr->k[0]);
+                      }
+                    }
+                  }
+                  else //that mean left &right list with in ptr that easy
+                  {
+                    no_ofnode_inright_list=give_no_of_records_in_list(ptr->db[i],ptr->db[i+1]);
+                    no_ofnode_inleft_list=give_no_of_records_in_list(ptr->db[i-1],ptr->db[i]);
+                    if(no_ofnode_inleft_list>2)
+                    {
+                      //taking form  max form left list
+                      ptr->db[i]=(ptr->db[i])->prev;
+                      //max record is add in the list & we can easilly delete record
+                      if(j==0&&i!=0)   //first node_dblist and i means it just above tree node
+                      {
+                        ptr->k[i-1]=(((ptr->db[i])->prev)->data);
+                      }
+                      else if(i==0&&j==0)  //this means first list  & list first from above
+                      {                   //btree_node need to replace just where old key with new
+                          root=manage_btree_just_replacing(root,(ret_val)->data,((ptr->db[i])->prev)->data);
+                          //this just replace old key with new one
+                      }
+                      delete_db_node(ret_val);
+                    }
+                    else if(no_ofnode_inright_list>2)
+                    {
+                      //taking form right list min element
+                      ptr->db[i+1]=ptr->db[i+1]->next;
+                      if(j==0&&i!=0)   //first node_dblist and i means it just above tree node
+                      {
+                        ptr->k[i]=(ptr->db[i])->data;
+                      }
+                      else if(i==0&&j==0)  //this means first list  & list first from above
+                      {                   //btree_node need to replace just where old key with new
+                          root=manage_btree_just_replacing(root,(ret_val)->data,(ret_val->next)->data);
+                          //this just replace old key with new one
+                      }
+                      delete_db_node(ret_val);
+                    }
+                    else
+                    {
+                      //mean left tree and right tree noodes ==2
+                      //mering in left list i!=0 not max
+                      light=(ret_val->next)->data;
+                      delete_db_node(ret_val);
+                      ptr->count--;
+                      for(k=i;k<ptr->count;k++)
+                      {
+                        ptr->db[k]=ptr->db[k+1];
+                      }
+                      for(k=i;k<ptr->count;k++)
+                      {
+                        ptr->k[k-1]=(ptr->db[k])->data;
+                      }
+
+                      if(j==0&&i!=0)   //first node_dblist and i means it just above tree node
+                      {
+                        ptr->k[i-1]=light; //i==0
+                      }
+                      else if(i==0&&j==0)  //this means first list  & list first from above
+                      {                   //btree_node need to replace just where old key with new
+                          root=manage_btree_just_replacing(root,light,(ptr->db[0])->data);
+                          //this just replace old key with new one
+                      }
+                      if(ptr->count==1)
+                      {
+                        root=adject_btree_node_when1(root,ptr->k[0]);
+                      }
+                    }
+                  }
+            }
+        }
+        else
+        {
+          ret_val=ret_val->next; //
+        }
+      }
+  }
+  return root;
+}
 int main()
 {
   btree_node * root;
