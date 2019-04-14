@@ -86,27 +86,44 @@ int give_no_of_records_in_list(dblist_type *start,dblist_type *nextstart)
   }
   return count;
 }
-void display(btree_node * root,int count)
+void display( btree_node *ptr, int blanks)
 {
-   int i;
-   printf("[");
-   for(i=0;i<root->count;i++)
-   {
-   printf("%d|",root->k[i]);
-  }
-   printf("]\n");
-   if(root->db[0]!=NULL)
-   {
-     for(i=0;i<root->count+1;i++)
-     {
-       display(root->p[i],count*10);
-     }
-   }
-   else
-   {
-
-   }
-}
+    if (ptr->p[0]!=NULL)
+    {
+        int i;
+        for(i=1; i<=blanks; i++)
+            printf(" ");
+        for (i=0; i < ptr->count; i++)
+            printf("%d ",ptr->k[i]);
+        printf("\n");
+        for (i=0; i <= ptr->count; i++)
+            display(ptr->p[i], blanks+10);
+    }
+    else
+    {
+      int i,j;
+      for(i=1; i<=blanks; i++)
+          printf(" ");
+      for (i=0; i < ptr->count; i++)
+          printf("|%d| ",ptr->k[i]);
+      printf("\n\n");
+      for (j=0; j <= ptr->count; j++)
+      {
+        //printf("%d\n",ptr->no_of_keys);
+      //  product_data_node* dptr=ptr->ptr.data_ptr[j];
+      for(i=1; i<=blanks+10; i++)
+          printf(" ");
+      for (i=0; i < ptr->count; i++)
+          //printf("innner i = %d\n",i);
+          //printf("%d ",dptr->data[i]);
+          //showproduct(dptr->data[i]);
+          printf("|%d |\t",ptr->db[i]->data);
+          // printf("%s")
+          printf("\n\n");
+      }
+      //    display_customer(ptr->ptr.next_ptr[i], blanks+10);
+    }/*End of if*/
+}/*End of display_customer()*/
 btree_node * split_btreenode_when_5node_are_there(btree_node *root,int key)
 {
   int i,j,done,flag=0;
@@ -321,40 +338,53 @@ btree_node* insert_record(btree_node * root ,dblist_type* newnode)
         }
     }
     ret_val=ptr->db[i];                 //start of node_dblist
-    no_list_node=give_no_of_records_in_list(start,end);  //it seding start and start of new list
-    for(i=0;i<no_list_node&&done==0;i++)  //at most we are cheacking next  4 record from bottom list
+    if(end==NULL)
     {
-      if((newnode->data)>ret_val->data&&ret_val->next!=NULL) //node data should greater current record
-      {                                           // beacause chances geting record
-        ret_val=ret_val->next; //
-      }
+        ptr->k[ptr->count+1]=newnode->data;
+        ptr->db[ptr->count+2]=newnode;
+        newnode->prev=ptr->db[ptr->count];
+        ptr->db[ptr->count]->next=newnode;
     }
-    light=insert_betn_dbnodes(ret_val,newnode); //this fun insert newnode before ret_val
-    no_list_node++;     //one is added
-    if (no_list_node==5)
+    else
     {
-      //code for spleatting db list
-      ret_val=ptr->db[i];  //starting for sublist
-      ret_val=ret_val->next;
-      ret_val=ret_val->next;   //reached at median or middle
-      ptr->count++;            //count of on of nodes are ++
-      for(j=ptr->count;j>i;j--)   //pushing data one location ahead
-      {                         //j can reach upto i+1 there a[i]copyed
-        ptr->k[j]=ptr->k[j-1];     //form j max is count so a[last bit not val(-1)copyed]
+      no_list_node=give_no_of_records_in_list(start,end);  //it seding start and start of new list
+      for(i=0;i<no_list_node&&done==0;i++)  //at most we are cheacking next  4 record from bottom list
+      {
+        if((newnode->data)>ret_val->data&&ret_val->next!=NULL) //node data should greater current record
+        {                                           // beacause chances geting record
+          ret_val=ret_val->next; //
+        }
       }
-      ptr->k[i]=ret_val->data;       //at i positiion we bring key
-      for(j=(ptr->count)+1;j>i+1;j--)   //similiry pointer form
-      {                                 //i+1pointer copyed to i+2 loca
-        ptr->db[j]=ptr->db[j-1];    //  last db[count] copyed to db[count+1]
+      light=insert_betn_dbnodes(ret_val,newnode); //this fun insert newnode before ret_val
+      no_list_node++;     //one is added
+      if (no_list_node==5)
+      {
+        //code for spleatting db list
+        ret_val=ptr->db[i];  //starting for sublist
+        ret_val=ret_val->next;
+        ret_val=ret_val->next;   //reached at median or middle
+        ptr->count++;            //count of on of nodes are ++
+        for(j=ptr->count;j>i;j--)   //pushing data one location ahead
+        {                         //j can reach upto i+1 there a[i]copyed
+          ptr->k[j]=ptr->k[j-1];     //form j max is count so a[last bit not val(-1)copyed]
+        }
+        ptr->k[i]=ret_val->data;       //at i positiion we bring key
+        for(j=(ptr->count)+1;j>i+1;j--)   //similiry pointer form
+        {                                 //i+1pointer copyed to i+2 loca
+          ptr->db[j]=ptr->db[j-1];    //  last db[count] copyed to db[count+1]
+        }
+        ptr->db[i+1]=ret_val;        //at i+1 pointer listed to madian or middle
+            if(ptr->count==5)
+            {
+              //code for spliatint btree nodes
+              root=split_btreenode_when_5node_are_there(root,ptr->k[2]);
+            }
       }
-      ptr->db[i+1]=ret_val;        //at i+1 pointer listed to madian or middle
-          if(ptr->count==5)
-          {
-            //code for spliatint btree nodes
-            root=split_btreenode_when_5node_are_there(root,ptr->k[2]);
-          }
+      
     }
+
   }
+  return root;
 }
 
 
@@ -392,7 +422,7 @@ btree_node * adject_btree_node_when1(btree_node *root,int key)
   if(ptr->count==0) //empty tree
   {
 // revemove  two  figerout leter
-        printf("\n \n");
+        printf("\n fdd//3456343######\n");
   }
   else if(ptr->count==1)
   {
@@ -507,6 +537,7 @@ btree_node * adject_btree_node_when1(btree_node *root,int key)
            if(left_bro!=NULL&&left_bro->count>2)
            {
              //take form left
+             old=magic_number(ptr);
              if(ptr->p[0]!=NULL)   //not second last most leaf
              {
                 for(j=ptr->count;j>0;j--)
@@ -519,6 +550,8 @@ btree_node * adject_btree_node_when1(btree_node *root,int key)
                 }
                 ptr->k[0]=left_bro->k[left_bro->count];
                 ptr->p[0]=left_bro->p[left_bro->count+1];
+                new=magic_number(ptr);
+                root=manage_btree_just_replacing(root,old,new);
              }
              else if(ptr->db[0]!=NULL)  //second last leaf
              {
@@ -572,6 +605,7 @@ btree_node * adject_btree_node_when1(btree_node *root,int key)
             if(left_bro!=NULL&&left_bro->count>2)
             {
               //take form left
+              old=magic_number(ptr);
               if(ptr->p[0]!=NULL)   //not second last most leaf
               {
                  for(j=ptr->count;j>0;j--)
@@ -584,6 +618,8 @@ btree_node * adject_btree_node_when1(btree_node *root,int key)
                  }
                  ptr->k[0]=left_bro->k[left_bro->count];
                  ptr->p[0]=left_bro->p[left_bro->count+1];
+                 new=magic_number(ptr);
+                 root=manage_btree_just_replacing(root,old,new);
               }
               else if(ptr->db[0]!=NULL)  //second last leaf
               {
@@ -607,7 +643,8 @@ btree_node * adject_btree_node_when1(btree_node *root,int key)
               {
                  ptr->k[1]=right_bro->k[0];
                  ptr->p[2]=right_bro->p[0];
-                 light=right_bro->k[0];
+                 old=magic_number(right_bro); ///
+                 new=magic_number(right_bro->p[1]);
                  for(j=0;j<right_bro->count;j++)
                  {
                    right_bro->k[j]=right_bro->k[j+1];
@@ -616,13 +653,14 @@ btree_node * adject_btree_node_when1(btree_node *root,int key)
                  {
                    right_bro->p[j]=right_bro->p[j+1];
                  }
-                 root=manage_btree_just_replacing(root,light,right_bro->k[0]);
+                 root=manage_btree_just_replacing(root,old,new);
               }
               else if(ptr->db[0]!=NULL)  //second last leaf
               {
                  ptr->k[1]=right_bro->k[0];
                  ptr->db[2]=right_bro->db[0];
-                 light=right_bro->k[0];
+                 old=magic_number(right_bro); ///
+                 new=right_bro->db[1]->data;
                  for(j=0;j<right_bro->count;j++)
                  {
                    right_bro->k[j]=right_bro->k[j+1];
@@ -631,7 +669,7 @@ btree_node * adject_btree_node_when1(btree_node *root,int key)
                  {
                    right_bro->db[j]=right_bro->db[j+1];
                  }
-                 root=manage_btree_just_replacing(root,light,right_bro->k[0]);
+                 root=manage_btree_just_replacing(root,old,new);
               }
             }
             else
@@ -1011,7 +1049,16 @@ btree_node * delete(btree_node * root,int key)
 int main()
 {
   btree_node * root;
+  dblist_type *temp;
   root=NULL;
+  int i;
+  for(i=0;i<5;i++)
+  {
+  		 temp=(dblist_type *)malloc(sizeof(dblist_type));
+       temp->data=i;
+  	  root=insert_record(root,temp);
+      display(root,1);
+  }
 
   return 0;
 }
