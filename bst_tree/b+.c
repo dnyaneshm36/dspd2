@@ -79,7 +79,7 @@ int give_no_of_records_in_list(dblist_type *start,dblist_type *nextstart)
 {
   int count=0;
   dblist_type *temp=start;
-  while(temp!=nextstart&&(temp->data<=nextstart->data)) //no nead to give second condition
+  while(temp!=nextstart)//no nead to give second condition
   {                                       //but still for extra protection lol.
     count++;
     temp=temp->next;
@@ -88,7 +88,7 @@ int give_no_of_records_in_list(dblist_type *start,dblist_type *nextstart)
 }
 void display( btree_node *ptr, int blanks)
 {
-    if (ptr->p[0]!=NULL)
+    if(ptr->p[0]!=NULL)
     {
         int i;
         for(i=1; i<=blanks; i++)
@@ -101,23 +101,31 @@ void display( btree_node *ptr, int blanks)
     }
     else
     {
-      int i,j;
+      int i,j,k;
+      dblist_type *temp;
       for(i=1; i<=blanks; i++)
           printf(" ");
       for (i=0; i < ptr->count; i++)
           printf("|%d| ",ptr->k[i]);
       printf("\n\n");
-      for (j=0; j <= ptr->count; j++)
+      for (j=0; j <ptr->count; j++)
       {
         //printf("%d\n",ptr->no_of_keys);
       //  product_data_node* dptr=ptr->ptr.data_ptr[j];
       for(i=1; i<=blanks+10; i++)
           printf(" ");
-      for (i=0; i < ptr->count; i++)
-          //printf("innner i = %d\n",i);
-          //printf("%d ",dptr->data[i]);
-          //showproduct(dptr->data[i]);
-          printf("|%d |\t",ptr->db[i]->data);
+		      for (i=0; i <= ptr->count; i++)
+		      {
+			  //printf("innner i = %d\n",i);
+			  //printf("%d ",dptr->data[i]);
+			  //showproduct(dptr->data[i]);
+			  temp=ptr->db[i];
+			  for(k=0;k<give_no_of_records_in_list(ptr->db[i],ptr->db[i+1]);k++)
+			  {
+			    printf("|%d |\t",temp->data);
+			    temp=temp->next;
+			  }
+			}
           // printf("%s")
           printf("\n\n");
       }
@@ -308,6 +316,7 @@ btree_node* insert_record(btree_node * root ,dblist_type* newnode)
     temp=give_empty_btree_node(); //give empty btree_node
     temp->k[0]=newnode->data;
     temp->db[0]=newnode;
+    temp->count++;
     root= temp;       //root changes to btree_node
   }
   else
@@ -338,12 +347,13 @@ btree_node* insert_record(btree_node * root ,dblist_type* newnode)
         }
     }
     ret_val=ptr->db[i];                 //start of node_dblist
-    if(end==NULL)
+    if(end==NULL&&ptr==root)
     {
         ptr->k[ptr->count+1]=newnode->data;
         ptr->db[ptr->count+2]=newnode;
         newnode->prev=ptr->db[ptr->count];
         ptr->db[ptr->count]->next=newnode;
+        ptr->count++;
     }
     else
     {
@@ -380,7 +390,7 @@ btree_node* insert_record(btree_node * root ,dblist_type* newnode)
               root=split_btreenode_when_5node_are_there(root,ptr->k[2]);
             }
       }
-      
+
     }
 
   }
@@ -1049,10 +1059,33 @@ btree_node * delete(btree_node * root,int key)
 int main()
 {
   btree_node * root;
-  dblist_type *temp;
+  dblist_type *temp,*second,*third,*fourth;
   root=NULL;
   int i;
-  for(i=0;i<5;i++)
+    temp=(dblist_type *)malloc(sizeof(dblist_type));
+       temp->data=1;
+      second=(dblist_type *)malloc(sizeof(dblist_type));
+       second->data=2;
+       third=(dblist_type *)malloc(sizeof(dblist_type));
+        third->data=3;
+        fourth=(dblist_type *)malloc(sizeof(dblist_type));
+         fourth->data=4;
+         temp->prev=NULL;
+         temp->next=second;
+         second->prev=temp;
+         second->next=third;
+         third->prev=second;
+         third->next=fourth;
+         fourth->prev=third;
+         fourth->next=NULL;
+         root=give_empty_btree_node();
+         root->k[0]=3;
+         root->db[0]=temp;
+         root->db[1]=third;
+         root->count++;
+         display(root,1);
+
+  for(i=5;i<10;i++)
   {
   		 temp=(dblist_type *)malloc(sizeof(dblist_type));
        temp->data=i;
