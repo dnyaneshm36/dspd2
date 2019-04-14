@@ -17,6 +17,19 @@ typedef struct btree_tag
   struct dblist *db[6];
 }btree_node;
 
+//all funtion defintion
+btree_node * give_empty_btree_node();
+status_code insert_betn_dbnodes(dblist_type *temp,dblist_type *newnode);
+int give_no_of_records_in_list(dblist_type *start,dblist_type *nextstart);
+void display(btree_node * root,int count);
+btree_node * split_btreenode_when_5node_are_there(btree_node *root,int key);
+dblist_type * search_for_record(btree_node * root ,int key);
+btree_node* insert_record(btree_node * root ,dblist_type* newnode);
+btree_node * adject_btree_node_when1(btree_node *root,int key);
+void delete_db_node(dblist_type * target);
+btree_node * manage_btree_just_replacing(btree_node *root,int old,int new);
+btree_node * delete(btree_node * root,int key);
+
 btree_node * give_empty_btree_node()
 {
   int i;
@@ -343,6 +356,24 @@ btree_node* insert_record(btree_node * root ,dblist_type* newnode)
     }
   }
 }
+
+
+int magic_number(btree_node *ptr)
+{
+    int x,done=0;
+    while(!done)
+    {
+       if(ptr->p[0]!=NULL)
+       {
+         ptr=ptr->p[0];
+       }
+       else
+       {
+         done=1;
+       }
+    }
+    return ptr->db[0]->data;
+}
 btree_node * adject_btree_node_when1(btree_node *root,int key)
 {
 // real quick information what it do just node where key key is present
@@ -353,11 +384,290 @@ btree_node * adject_btree_node_when1(btree_node *root,int key)
 //if left_bro has enough broght from present of parant
 //try for same thing from right_bro
 // merge them see what will done
-  int i,j,k,done,flag=0,light;
+  int i,j,k,done,flag=0,light,new,old;
   btree_node *ptr,*temp,*father,*left_bro,*right_bro;
   dblist_type *ret_val,*start,*end;
   int no_list_node,father_ith_child;
-  int no_ofnode_inleft_list,no_ofnode_inright_list;    
+  int no_ofnode_inleft_list,no_ofnode_inright_list;
+  if(ptr->count==0) //empty tree
+  {
+// revemove  two  figerout leter
+        printf("\n \n");
+  }
+  else if(ptr->count==1)
+  {
+      while (flag==0)
+      {
+        if(ptr->k[0]==key)
+        {
+          flag=1;
+        }
+        else
+        {
+            done=0;
+            for(i=0;i<4&&done==0&&(ptr->k[i])!=-1&&i<(ptr->count);i++)     //tavaling in key array of size 4
+            {                                     //stoping when we get empty space which is -1
+              if ((key)<ptr->k[i])              //stoping when key is less than array(key) of i
+              {                               //count element to extra protection
+                done=1;
+              }
+            }                                     //exiting loop i++ is perform
+            if(done==1)                          //decrease beacause of lesserkeys
+            {                                   //found at pointer array of btree_tag
+              i--;
+            }
+            if(ptr->p[0]!=NULL)          //to check weather this btree_node is not last
+            {
+              father_ith_child=i;
+              father=ptr;
+              ptr=ptr->p[i];
+            }
+        }
+      }
+      if(father_ith_child==0)  //left most ptr
+      {
+        //take form try to take righ with pointer
+        //if it had take it form it means copy in right_bro->[0]
+        // to ptr->[1]
+        right_bro=father->p[father_ith_child+1];
+          if(right_bro!=NULL&&right_bro->count>2)
+          {
+            //try form right
+            right_bro=father->p[father_ith_child+1];
+            if(ptr->p[0]!=NULL)   //not second last most leaf
+            {
+               ptr->k[1]=right_bro->k[0];
+               ptr->p[2]=right_bro->p[0];
+               old=magic_number(right_bro); ///
+               new=magic_number(right_bro->p[1]);
+               for(j=0;j<right_bro->count;j++)
+               {
+                 right_bro->k[j]=right_bro->k[j+1];
+               }
+               for(j=0;j<right_bro->count+1;j++)
+               {
+                 right_bro->p[j]=right_bro->p[j+1];
+               }
+               root=manage_btree_just_replacing(root,old,new);
+            }
+            else if(ptr->db[0]!=NULL)  //second last leaf
+            {
+               ptr->k[1]=right_bro->k[0];
+               ptr->db[2]=right_bro->db[0];
+               old=magic_number(right_bro); ///
+               new=right_bro->db[1]->data;
+               for(j=0;j<right_bro->count;j++)
+               {
+                 right_bro->k[j]=right_bro->k[j+1];
+               }
+               for(j=0;j<right_bro->count+1;j++)
+               {
+                 right_bro->db[j]=right_bro->db[j+1];
+               }
+               root=manage_btree_just_replacing(root,old,new);
+            }
+          }
+          else
+          {
+             //merge into right_bro
+             ptr->k[1]=father->k[father_ith_child];
+             ptr->k[2]=right_bro->k[0];
+             ptr->k[3]=right_bro->k[1];
+                if(ptr->p[0]!=NULL)
+                {
+                  ptr->p[2]=right_bro->p[0];
+                  ptr->p[3]=right_bro->p[1];
+                  ptr->p[4]=right_bro->p[2];
+                }
+                else
+                {
+                  ptr->db[2]=right_bro->db[0];
+                  ptr->db[3]=right_bro->db[1];
+                  ptr->db[4]=right_bro->db[2];
+                }
+             for(k=father_ith_child;k<father->count;k++)
+             {
+               father->k[k]=father->k[k+1];
+               father->p[k+1]=father->p[k+2];
+             }
+             father->count--;
+             free(right_bro);
+             right_bro=NULL;
+              if(father->count<2)
+              {
+                  root=adject_btree_node_when1(root,father->k[0]);
+              }
+          }
+      }
+      else if(father_ith_child==father->count) //right most node right_bro=N
+      {
+         // check for left left_bro it had take it form left_bro
+         //if not then take merge with left
+         left_bro=father->p[father_ith_child-1];
+           if(left_bro!=NULL&&left_bro->count>2)
+           {
+             //take form left
+             if(ptr->p[0]!=NULL)   //not second last most leaf
+             {
+                for(j=ptr->count;j>0;j--)
+                {
+                  ptr->k[j+1]=ptr->k[j];
+                }
+                for(j=ptr->count+1;j>0;j--)
+                {
+                  ptr->p[j]=ptr->p[j+1];
+                }
+                ptr->k[0]=left_bro->k[left_bro->count];
+                ptr->p[0]=left_bro->p[left_bro->count+1];
+             }
+             else if(ptr->db[0]!=NULL)  //second last leaf
+             {
+               for(j=ptr->count;j>0;j--)
+               {
+                 ptr->k[j+1]=ptr->k[j];
+               }
+               for(j=ptr->count+1;j>0;j--)
+               {
+                 ptr->db[j]=ptr->db[j+1];
+               }
+               root=manage_btree_just_replacing(root,ptr->k[0],left_bro->k[left_bro->count]);
+               ptr->k[0]=ptr->db[2]->data;
+               ptr->db[0]=left_bro->db[left_bro->count+1];
+             }
+           }
+           else
+           {
+             //merge with left
+             left_bro->k[2]=father->k[father_ith_child];
+             left_bro->k[3]=ptr->k[0];
+             if(ptr->p[0]!=NULL)
+             {
+               left_bro->p[3]=ptr->p[0];
+               left_bro->p[4]=ptr->p[1];
+             }
+             else
+             {
+               left_bro->db[3]=ptr->db[0];
+               left_bro->db[4]=ptr->db[1];
+             }
+
+             for(k=father_ith_child;k<father->count;k++)
+             {
+               father->k[k]=father->k[k+1];
+               father->p[k+1]=father->p[k+2];
+             }
+             father->count--;
+             free(ptr);
+             ptr=NULL;
+              if(father->count<2)
+              {
+                  root=adject_btree_node_when1(root,father->k[0]);
+              }
+           }
+      }
+      else  // to easy  left_bro&right_bro both ! NULL
+      {   // first left_bro then right_bro else merge with left
+        left_bro=father->p[father_ith_child-1];
+        right_bro=father->p[father_ith_child+1];
+            if(left_bro!=NULL&&left_bro->count>2)
+            {
+              //take form left
+              if(ptr->p[0]!=NULL)   //not second last most leaf
+              {
+                 for(j=ptr->count;j>0;j--)
+                 {
+                   ptr->k[j+1]=ptr->k[j];
+                 }
+                 for(j=ptr->count+1;j>0;j--)
+                 {
+                   ptr->p[j]=ptr->p[j+1];
+                 }
+                 ptr->k[0]=left_bro->k[left_bro->count];
+                 ptr->p[0]=left_bro->p[left_bro->count+1];
+              }
+              else if(ptr->db[0]!=NULL)  //second last leaf
+              {
+                for(j=ptr->count;j>0;j--)
+                {
+                  ptr->k[j+1]=ptr->k[j];
+                }
+                for(j=ptr->count+1;j>0;j--)
+                {
+                  ptr->db[j]=ptr->db[j+1];
+                }
+                root=manage_btree_just_replacing(root,ptr->k[0],left_bro->k[left_bro->count]);
+                ptr->k[0]=ptr->db[2]->data;
+                ptr->db[0]=left_bro->db[left_bro->count+1];
+              }
+            }
+            else if(right_bro!=NULL&&right_bro->count>2)
+            {
+              //take form right
+              if(ptr->p[0]!=NULL)   //not second last most leaf
+              {
+                 ptr->k[1]=right_bro->k[0];
+                 ptr->p[2]=right_bro->p[0];
+                 light=right_bro->k[0];
+                 for(j=0;j<right_bro->count;j++)
+                 {
+                   right_bro->k[j]=right_bro->k[j+1];
+                 }
+                 for(j=0;j<right_bro->count+1;j++)
+                 {
+                   right_bro->p[j]=right_bro->p[j+1];
+                 }
+                 root=manage_btree_just_replacing(root,light,right_bro->k[0]);
+              }
+              else if(ptr->db[0]!=NULL)  //second last leaf
+              {
+                 ptr->k[1]=right_bro->k[0];
+                 ptr->db[2]=right_bro->db[0];
+                 light=right_bro->k[0];
+                 for(j=0;j<right_bro->count;j++)
+                 {
+                   right_bro->k[j]=right_bro->k[j+1];
+                 }
+                 for(j=0;j<right_bro->count+1;j++)
+                 {
+                   right_bro->db[j]=right_bro->db[j+1];
+                 }
+                 root=manage_btree_just_replacing(root,light,right_bro->k[0]);
+              }
+            }
+            else
+            {
+              //merge into left_bro
+              left_bro->k[2]=father->k[father_ith_child];
+              left_bro->k[3]=ptr->k[0];
+              if(ptr->p[0]!=NULL)
+              {
+                left_bro->p[3]=ptr->p[0];
+                left_bro->p[4]=ptr->p[1];
+              }
+              else
+              {
+                left_bro->db[3]=ptr->db[0];
+                left_bro->db[4]=ptr->db[1];
+              }
+
+              for(k=father_ith_child;k<father->count;k++)
+              {
+                father->k[k]=father->k[k+1];
+                father->p[k+1]=father->p[k+2];
+              }
+              father->count--;
+              free(ptr);
+              ptr=NULL;
+               if(father->count<2)
+               {
+                   root=adject_btree_node_when1(root,father->k[0]);
+               }
+
+            }
+      }
+
+  }
+  return root;
 }
 void delete_db_node(dblist_type * target)
 {
@@ -409,7 +719,8 @@ btree_node * manage_btree_just_replacing(btree_node *root,int old,int new)
   	        {
   	          ptr=ptr->p[i];
   	        }
-  	    }
+
+        }
       }
   return root;
 }
@@ -549,7 +860,7 @@ btree_node * delete(btree_node * root,int key)
                             root=manage_btree_just_replacing(root,light,(ptr->db[0])->data);
                             //this just replace old key with new one
                         }
-                        if(ptr->count==1)
+                        if(ptr->count<2)
                         {
                           root=adject_btree_node_when1(root,ptr->k[0]);
                         }
@@ -615,7 +926,7 @@ btree_node * delete(btree_node * root,int key)
                           root=manage_btree_just_replacing(root,light,(ptr->db[0])->data);
                           //this just replace old key with new one
                       }
-                      if(ptr->count==1)
+                      if(ptr->count<2)
                       {
                         root=adject_btree_node_when1(root,ptr->k[0]);
                       }
@@ -681,7 +992,7 @@ btree_node * delete(btree_node * root,int key)
                           root=manage_btree_just_replacing(root,light,(ptr->db[0])->data);
                           //this just replace old key with new one
                       }
-                      if(ptr->count==1)
+                      if(ptr->count<2)
                       {
                         root=adject_btree_node_when1(root,ptr->k[0]);
                       }
